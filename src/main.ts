@@ -1,5 +1,5 @@
 import * as core from '@actions/core'
-import simpleGit from "simple-git";
+import simpleGit from 'simple-git'
 
 export async function run(): Promise<void> {
   try {
@@ -13,17 +13,20 @@ export async function run(): Promise<void> {
     core.debug(`tagVersion: ${tagVersion}`)
     core.debug(`branchName: ${branchName}`)
 
-    const git = simpleGit();
+    const git = simpleGit()
+
+    const buildBranchName = `build-${tagVersion}`
+    await git.checkoutLocalBranch(buildBranchName)
 
     const diff = await git.diffSummary()
 
     if (diff.changed > 0) {
-      await git.add(".")
+      await git.add('.')
       await git.commit(commitMessage)
     }
 
     await git.addAnnotatedTag(tagVersion, tagMessage)
-    await git.raw("push", "origin", "-u", branchName, "--follow-tags")
+    await git.raw('push', 'origin', '-u', branchName, '--follow-tags')
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) core.setFailed(error.message)

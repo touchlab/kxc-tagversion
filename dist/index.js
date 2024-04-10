@@ -31195,13 +31195,15 @@ async function run() {
         core.debug(`tagVersion: ${tagVersion}`);
         core.debug(`branchName: ${branchName}`);
         const git = (0, simple_git_1.default)();
+        const buildBranchName = `build-${tagVersion}`;
+        await git.checkoutLocalBranch(buildBranchName);
         const diff = await git.diffSummary();
         if (diff.changed > 0) {
-            await git.add(".");
+            await git.add('.');
             await git.commit(commitMessage);
         }
         await git.addAnnotatedTag(tagVersion, tagMessage);
-        await git.raw("push", "origin", "-u", branchName, "--follow-tags");
+        await git.raw('push', 'origin', '-u', branchName, '--follow-tags');
     }
     catch (error) {
         // Fail the workflow run if an error occurs
