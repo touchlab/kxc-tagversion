@@ -31202,7 +31202,7 @@ async function run() {
             await git.add('.');
             await git.commit(commitMessage);
         }
-        await git.addAnnotatedTag(tagVersion, tagMessage);
+        await git.raw('tag', '-fa', tagVersion, '-m', tagMessage);
         await git.raw('push', 'origin', '-f', `refs/tags/${branchName}`);
     }
     catch (error) {
