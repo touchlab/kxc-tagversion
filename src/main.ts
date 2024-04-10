@@ -26,7 +26,7 @@ export async function run(): Promise<void> {
       await git.commit(commitMessage)
     }
 
-    await git.addAnnotatedTag(tagVersion, tagMessage)
+    await git.raw('tag', '-fa', tagVersion, '-m', tagMessage)
     await git.raw('push', 'origin', '-f', `refs/tags/${branchName}`)
   } catch (error) {
     // Fail the workflow run if an error occurs
