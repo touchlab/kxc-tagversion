@@ -1,24 +1,29 @@
 import * as core from '@actions/core'
-import { wait } from './wait'
+import simpleGit from "simple-git";
 
-/**
- * The main function for the action.
- * @returns {Promise<void>} Resolves when the action is complete.
- */
 export async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
+    const commitMessage: string = core.getInput('commitMessage')
+    const tagMessage: string = core.getInput('tagMessage')
+    const tagVersion: string = core.getInput('tagVersion')
+    const branchName: string = core.getInput('branchName')
 
-    // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    core.debug(`Waiting ${ms} milliseconds ...`)
+    core.debug(`commitMessage: ${commitMessage}`)
+    core.debug(`tagMessage: ${tagMessage}`)
+    core.debug(`tagVersion: ${tagVersion}`)
+    core.debug(`branchName: ${branchName}`)
 
-    // Log the current timestamp, wait, then log the new timestamp
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    const git = simpleGit();
 
-    // Set outputs for other workflow steps to use
-    core.setOutput('time', new Date().toTimeString())
+    const diff = await git.diffSummary()
+
+    if (diff.changed > 0) {
+      await git.add(".")
+      await git.commit(commitMessage)
+    }
+
+    await git.addAnnotatedTag(tagVersion, tagMessage)
+    await git.raw("push", "origin", "-u", branchName, "--follow-tags")
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) core.setFailed(error.message)
