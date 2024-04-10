@@ -15,6 +15,8 @@ export async function run(): Promise<void> {
 
     const git = simpleGit()
 
+    await git.pull()
+
     await git.checkoutLocalBranch(branchName)
 
     const diff = await git.diffSummary()
@@ -25,7 +27,7 @@ export async function run(): Promise<void> {
     }
 
     await git.addAnnotatedTag(tagVersion, tagMessage)
-    await git.raw('push', 'origin', '-u', branchName, '--follow-tags')
+    await git.raw('push', 'origin', '-f', `refs/tags/${branchName}`)
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) core.setFailed(error.message)
