@@ -15,8 +15,7 @@ export async function run(): Promise<void> {
 
     const git = simpleGit()
 
-    const buildBranchName = `build-${tagVersion}`
-    await git.checkoutLocalBranch(buildBranchName)
+    await git.checkoutLocalBranch(branchName)
 
     const diff = await git.diffSummary()
 
