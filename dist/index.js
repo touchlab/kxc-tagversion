@@ -31203,7 +31203,7 @@ async function run() {
             await git.commit(commitMessage);
         }
         await git.raw('tag', '-fa', tagVersion, '-m', tagMessage);
-        await git.raw('push', 'origin', '-f', `refs/tags/${branchName}`);
+        await git.raw('push', 'origin', '-f', `refs/tags/${tagVersion}`);
     }
     catch (error) {
         // Fail the workflow run if an error occurs
